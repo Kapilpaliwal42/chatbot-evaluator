@@ -33,8 +33,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         from datasets import Dataset
-        from peft import LoraConfig
-        from transformers import AutoTokenizer, BitsAndBytesConfig, TrainingArguments
+        import torch
+        from peft import LoraConfig, prepare_model_for_kbit_training
+        from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, TrainingArguments
         from trl import SFTTrainer
     except ImportError as exc:
         raise SystemExit(
@@ -46,13 +47,29 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("Refusing to train on fewer than 30 normalized examples.")
     dataset = Dataset.from_list([{"text": format_example(row)} for row in rows])
     tokenizer = AutoTokenizer.from_pretrained(args.model, use_fast=True)
-    quantization = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype="bfloat16")
+    compute_dtype = torch.float16
+    quantization = BitsAndBytesConfig(
+        load_in_4bit=True, bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=compute_dtype, bnb_4bit_use_double_quant=True,
+    )
+    model = AutoModelForCausalLM.from_pretrained(
+        args.model, quantization_config=quantization, device_map="auto",
+        torch_dtype=compute_dtype, low_cpu_mem_usage=True,
+    )
+    model.config.use_cache = False
+    model = prepare_model_for_kbit_training(model)
     lora = LoraConfig(
         r=16, lora_alpha=32, lora_dropout=0.05, bias="none",
         task_type="CAUSAL_LM", target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
     )
+    class StandardLossSFTTrainer(SFTTrainer):
+        def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+            outputs = model(**inputs)
+            loss = outputs.loss
+            return (loss, outputs) if return_outputs else loss
+
     trainer_kwargs = {
-        "model": args.model,
+        "model": model,
         "train_dataset": dataset,
         "peft_config": lora,
     }
@@ -70,7 +87,7 @@ def main(argv: list[str] | None = None) -> int:
             output_dir=str(args.out), num_train_epochs=args.epochs,
             per_device_train_batch_size=args.batch_size, gradient_accumulation_steps=16,
             learning_rate=2e-4, logging_steps=10, save_strategy="epoch",
-            bf16=True, gradient_checkpointing=True, report_to="none",
+            fp16=True, bf16=False, gradient_checkpointing=True, report_to="none",
             dataset_text_field="text", max_length=args.max_length,
             loss_type="nll",
         )
@@ -84,10 +101,10 @@ def main(argv: list[str] | None = None) -> int:
             output_dir=str(args.out), num_train_epochs=args.epochs,
             per_device_train_batch_size=args.batch_size, gradient_accumulation_steps=16,
             learning_rate=2e-4, logging_steps=10, save_strategy="epoch",
-            bf16=True, gradient_checkpointing=True, report_to="none",
+            fp16=True, bf16=False, gradient_checkpointing=True, report_to="none",
         )
         trainer_kwargs.update(args=training, dataset_text_field="text", max_seq_length=args.max_length)
-    trainer = SFTTrainer(**trainer_kwargs)
+    trainer = StandardLossSFTTrainer(**trainer_kwargs)
     trainer.train()
     trainer.save_model(str(args.out))
     tokenizer.save_pretrained(str(args.out))
