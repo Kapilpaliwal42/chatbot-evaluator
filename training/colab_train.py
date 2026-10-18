@@ -66,13 +66,18 @@ def main(argv: list[str] | None = None) -> int:
     except ImportError:
         SFTConfig = None
     if SFTConfig is not None:
-        training = SFTConfig(
+        sft_options = dict(
             output_dir=str(args.out), num_train_epochs=args.epochs,
             per_device_train_batch_size=args.batch_size, gradient_accumulation_steps=16,
             learning_rate=2e-4, logging_steps=10, save_strategy="epoch",
             bf16=True, gradient_checkpointing=True, report_to="none",
             dataset_text_field="text", max_length=args.max_length,
+            loss_type="nll",
         )
+        supported_options = inspect.signature(SFTConfig.__init__).parameters
+        training = SFTConfig(**{
+            key: value for key, value in sft_options.items() if key in supported_options
+        })
         trainer_kwargs["args"] = training
     else:
         training = TrainingArguments(
