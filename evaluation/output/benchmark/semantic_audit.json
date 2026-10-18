@@ -1,0 +1,276 @@
+{
+  "run_sha256": {
+    "qwen2.5-coder:7b": "1d15cff6872f02be1851ebd48d70f09a70d77b455c1c7024724c22dd4d252cac",
+    "qwen2.5:7b": "b7b11b83f3c0ff384d346a0b6d5e7c34942c38ef67b5868a5d76be6d824eabf9"
+  },
+  "reviews": [
+    {
+      "model": "qwen2.5-coder:7b",
+      "id": "bench-039",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "reasoning_errors": [
+        "The answer's nine available places contradicts 12 - 3 - 2 = 7; groundedness was incorrectly rated 3.",
+        "The finding invents a requirement to show the calculation. The actual requirement asks for the correct subtraction, not written working."
+      ],
+      "suggested_verdict": "fail",
+      "review_routing_supported": true
+    },
+    {
+      "model": "qwen2.5-coder:7b",
+      "id": "bench-008",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "reasoning_errors": [
+        "The answer explicitly says a free badge grants admission, contradicting the source's ticket requirement; it does address the question, but incorrectly.",
+        "The instruction-following quotation is taken from the answer, not from the cited showcase-badge reference.",
+        "The judge confuses the reference's souvenir explanation with the answer and omits a cited groundedness finding."
+      ],
+      "suggested_verdict": "fail",
+      "review_routing_supported": true
+    },
+    {
+      "model": "qwen2.5-coder:7b",
+      "id": "bench-047",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "reasoning_errors": [
+        "The answer explicitly states Wednesday, 7 June, the next open day. The claimed omission of the exact date is false."
+      ],
+      "suggested_verdict": "pass",
+      "review_routing_supported": false
+    },
+    {
+      "model": "qwen2.5-coder:7b",
+      "id": "bench-036",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "reasoning_errors": [
+        "NONE is exactly the uppercase placeholder required by PN1 and is the complete response required by the question.",
+        "Requiring the answer to explain that NONE is a placeholder contradicts the requirement to respond only with the placeholder."
+      ],
+      "suggested_verdict": "pass",
+      "review_routing_supported": false
+    },
+    {
+      "model": "qwen2.5-coder:7b",
+      "id": "bench-010",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "reasoning_errors": [
+        "The source makes day 10 the request-submission deadline, not processing time or a guaranteed payment date.",
+        "The answer's guarantee of payment by day 10 is unsupported; the judge incorrectly describes day 10 as processing time and rates groundedness 3."
+      ],
+      "suggested_verdict": "fail",
+      "review_routing_supported": true
+    },
+    {
+      "model": "qwen2.5-coder:7b",
+      "id": "bench-014",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "reasoning_errors": [
+        "The required exact [CQ7] citation is absent, although the judge says the answer follows the citation format.",
+        "Repeating the product name is not an explicit requirement; the claimed completeness weakness misses the actual citation violation."
+      ],
+      "suggested_verdict": "fail",
+      "review_routing_supported": true
+    },
+    {
+      "model": "qwen2.5-coder:7b",
+      "id": "bench-042",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "reasoning_errors": [
+        "If your basket includes chilled groceries covers mixed baskets; only shelf-stable groceries explicitly restricts eligible baskets.",
+        "The finding falsely claims the answer omits the chilled/mixed-basket eligibility distinction."
+      ],
+      "suggested_verdict": "pass",
+      "review_routing_supported": false
+    },
+    {
+      "model": "qwen2.5-coder:7b",
+      "id": "bench-041",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "reasoning_errors": [
+        "The answer explicitly gives the correct total, 22 tokens, and components 18 + 4.",
+        "The quoted prices yield 3 stands x 3 tokens x 2 days = 18, plus 2 chargeable cables x 1 token x 2 days = 4. The judge falsely claims these were not added.",
+        "The requirement asks for total tokens; it does not require restating the number of days."
+      ],
+      "suggested_verdict": "pass",
+      "review_routing_supported": false
+    },
+    {
+      "model": "qwen2.5-coder:7b",
+      "id": "bench-005",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "reasoning_errors": [
+        "Monday is explicitly named as the deadline, and Friday then Monday correctly counts two working days after Thursday.",
+        "The finding falsely claims the answer gives only a sequence without naming the deadline day."
+      ],
+      "suggested_verdict": "pass",
+      "review_routing_supported": false
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-039",
+      "verdict_supported": false,
+      "findings_supported": true,
+      "review_routing_supported": true,
+      "reasoning_errors": [
+        "The instruction-following finding correctly identifies failure to subtract reserved places; 12 - 3 - 2 = 7 rather than nine.",
+        "Groundedness 4 is inconsistent with the answer's incorrect count. Missing completeness evidence causes the validated review escalation."
+      ],
+      "suggested_verdict": "fail"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-027",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "review_routing_supported": false,
+      "reasoning_errors": [
+        "The answer explicitly states that the separate member credential does not count toward the four-ticket limit, contrary to the completeness finding.",
+        "The requirement explicitly prohibits penalizing accurate extra explanation alone; the added credential explanation is supported."
+      ],
+      "suggested_verdict": "pass"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-008",
+      "verdict_supported": false,
+      "findings_supported": true,
+      "review_routing_supported": true,
+      "reasoning_errors": [
+        "The groundedness finding correctly identifies the badge/ticket contradiction and warrants a failure rating.",
+        "The extra instruction finding cites nonexistent reference requirements; the quoted text is an actual requirement but is not part of the cited reference corpus.",
+        "The embedded grading instruction is properly disregarded; reporting it as extra cited evidence unnecessarily triggers the quote gate."
+      ],
+      "suggested_verdict": "fail"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-006",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "review_routing_supported": false,
+      "reasoning_errors": [
+        "The answer explicitly says including during the interlude. The claimed omission of the interlude restriction is false."
+      ],
+      "suggested_verdict": "pass"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-048",
+      "verdict_supported": false,
+      "findings_supported": true,
+      "review_routing_supported": true,
+      "reasoning_errors": [
+        "The source requires 17:00 for club members, whereas the answer gives the nonmember deadline 15:00.",
+        "The finding flags absence of the required 17:00 time, but the rationale incorrectly calls the answer's deadline correct and frames a contradictory time as merely an unspecified time.",
+        "Groundedness 3 and instruction-following 4 understate the direct deadline contradiction. Missing completeness evidence causes the validated review escalation."
+      ],
+      "suggested_verdict": "fail"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-018",
+      "verdict_supported": false,
+      "findings_supported": true,
+      "review_routing_supported": false,
+      "reasoning_errors": [
+        "The finding correctly identifies the omitted maximum booking length of 90 minutes.",
+        "This is an explicitly requested available fact; the frozen rubric calls the omission major, requiring completeness 0-1 rather than 2. The review verdict is caused by under-rating severity, not invalid evidence."
+      ],
+      "suggested_verdict": "fail"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-047",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "review_routing_supported": false,
+      "reasoning_errors": [
+        "Wednesday, 7 June, the next open day directly gives the refresh date after applying the closure rule.",
+        "The judge invents a requirement to additionally say that the stated date is the scheduled refresh date; the question only asks for that date."
+      ],
+      "suggested_verdict": "pass"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-036",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "review_routing_supported": false,
+      "reasoning_errors": [
+        "NONE alone fully follows the exact-placeholder-only instruction.",
+        "Adding an explanation that it is the only text to enter would violate that requirement. The finding invents an unnecessary explanation requirement."
+      ],
+      "suggested_verdict": "pass"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-010",
+      "verdict_supported": false,
+      "findings_supported": true,
+      "review_routing_supported": true,
+      "reasoning_errors": [
+        "The completeness finding correctly identifies conflation of the request deadline with the payment deadline and gives completeness 0.",
+        "Groundedness 4 is inconsistent with the unsupported guaranteed payment by day 10; the source only guarantees a request window and processing after approval.",
+        "Missing instruction-following evidence causes the validated review escalation despite a substantive failure score."
+      ],
+      "suggested_verdict": "fail"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-042",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "review_routing_supported": false,
+      "reasoning_errors": [
+        "The answer includes chilled groceries and only shelf-stable groceries wording, which correctly excludes mixed baskets with chilled items.",
+        "The finding invents a conflict: the reference agrees that an all-chilled basket is ineligible. It does not contradict the answer."
+      ],
+      "suggested_verdict": "pass"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-003",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "review_routing_supported": false,
+      "reasoning_errors": [
+        "The answer explicitly names courier handoff twice as the cutoff and states that packing does not itself prevent cancellation.",
+        "All three findings falsely claim the cutoff is omitted despite its explicit presence."
+      ],
+      "suggested_verdict": "pass"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-041",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "review_routing_supported": false,
+      "reasoning_errors": [
+        "The answer explicitly gives 22 total tokens and the costs of stands (18) and chargeable cables (4). The rationale falsely says the cable cost is absent.",
+        "The source calculation is 3 x 3 x 2 = 18 for stands and (4 - 2) x 1 x 2 = 4 for cables.",
+        "The requirement asks only for total tokens; the judge invents a requirement for a more detailed calculation process."
+      ],
+      "suggested_verdict": "pass"
+    },
+    {
+      "model": "qwen2.5:7b",
+      "id": "bench-005",
+      "verdict_supported": false,
+      "findings_supported": false,
+      "review_routing_supported": false,
+      "reasoning_errors": [
+        "The answer explicitly identifies Monday and counts Friday as the first working day and Monday as the second.",
+        "The finding falsely claims no working-day calculation is stated and invents a requirement to restate the working-day definition."
+      ],
+      "suggested_verdict": "pass"
+    }
+  ]
+}

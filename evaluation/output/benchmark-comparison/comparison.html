@@ -1,0 +1,571 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Local judge benchmark · comparison</title><style>
+:root{color-scheme:light;--ink:#17283e;--muted:#56667a;--line:#dde5ee;
+--blue:#155be7;--wash:#f2f6fb;--green:#076746;--amber:#88570d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--wash);
+color:var(--ink);font:15px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--blue);text-underline-offset:3px}main{max-width:1250px;margin:auto;padding:36px 28px 60px}
+header{padding:28px 0 16px}.eyebrow{text-transform:uppercase;letter-spacing:.13em;
+font-size:11px;font-weight:750;color:var(--blue)}h1{font-size:clamp(30px,5vw,48px);
+line-height:1.13;letter-spacing:-.04em;margin:14px 0}h2{font-size:24px;letter-spacing:-.025em;
+line-height:1.3;margin:0 0 8px}h3{font-size:17px;margin:0 0 10px}p{margin:0 0 14px}
+.lede{max-width:830px;font-size:17px;color:var(--muted)}.muted,small{color:var(--muted)}
+.nav{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;margin:22px 0}
+.notice{background:#fff9e9;border:1px solid #ead7a6;border-radius:12px;padding:18px 22px;
+color:#64430d;margin-bottom:26px}.notice p:last-child{margin:0}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:24px 0}
+.card,.section,.matrix{background:white;border:1px solid var(--line);border-radius:14px}
+.card{padding:23px}.card .label{font-size:12px;font-weight:650;color:var(--muted)}
+.stat{font-size:38px;font-weight:750;letter-spacing:-.04em;line-height:1.3;margin:8px 0}
+.model-stat{font-size:22px;letter-spacing:-.025em;overflow-wrap:anywhere;margin:12px 0;
+font-weight:750;line-height:1.35}.card p{font-size:13px;margin:0;color:var(--muted)}
+.section{padding:26px;margin-top:24px;scroll-margin-top:20px}.intro{max-width:900px;color:var(--muted)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:9px;margin-top:20px}
+table{border-collapse:collapse;width:100%;font-size:13px;text-align:left;min-width:1150px}
+caption{text-align:left;padding:13px 15px;color:var(--muted);background:#f9fbfe;font-size:12px}
+th{background:#f4f7fb;color:#43546b;font-size:11px;text-transform:uppercase;letter-spacing:.045em}
+th,td{padding:15px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}.selected td{background:#f4f8ff}
+td strong{display:block;font-size:14px;white-space:nowrap}td small{display:block;max-width:220px}
+.pill{display:inline-block;padding:3px 8px;border-radius:999px;background:#eaf1ff;color:#2159b3;
+font-size:10px;font-weight:700;letter-spacing:.02em;margin-top:6px}.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.notes{font-size:12px;color:var(--muted);margin:15px 0 0;max-width:1000px}
+.matrix-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}.matrix{padding:20px;
+border-radius:10px}.matrix .table-wrap{margin-top:14px}.matrix table{min-width:350px;text-align:right}
+.matrix th:first-child,.matrix td:first-child{text-align:left}.matrix th,.matrix td{padding:11px}
+.diagonal{background:#eaf8f1;font-weight:750;color:var(--green)}.matrix p{font-size:12px;margin:8px 0 0}
+.decision{border-left:4px solid var(--blue)}.decision ul{margin:14px 0;padding-left:22px}
+.decision li{margin:7px 0}.audit-list{margin:16px 0;padding-left:22px}.audit-list li{margin:12px 0}
+.audit-item{background:#f7f9fc;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:12px 0}
+details{margin:16px 0;border:1px solid var(--line);border-radius:9px;background:#fbfcfe}
+summary{cursor:pointer;font-size:13px;font-weight:650;padding:14px 17px}details>div{padding:0 17px 17px}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font:12px/1.6 ui-monospace,
+Consolas,monospace;background:#f3f6fb;border-radius:7px;padding:15px;margin:5px 0}
+dl{display:grid;grid-template-columns:180px 1fr;gap:8px 16px;font-size:13px}dt{color:var(--muted)}
+dd{margin:0;overflow-wrap:anywhere}footer{font-size:12px;color:var(--muted);padding:25px 0}
+@media(max-width:780px){main{padding:22px 16px 40px}.cards,.matrix-grid{grid-template-columns:1fr}
+.card{padding:18px}.section{padding:20px 16px}.stat{font-size:32px}dl{grid-template-columns:1fr;gap:2px}
+dd{margin-bottom:8px}.notice{padding:16px}.nav{gap:12px}}
+</style></head><body><main>
+<header><div class="eyebrow">Local judge benchmark · Frozen version 1</div><h1>Two local judges, one frozen test.</h1><p class="lede">A comparison of two Qwen 7B models on 48 fictional, document-grounded cases. The candidate was selected from calibration results before either model saw the holdout.</p><nav class="nav" aria-label="Report sections"><a href="#holdout">Holdout results</a><a href="#calibration">Calibration selection</a><a href="#matrices">Confusion matrices</a><a href="#reasoning">Reasoning review</a><a href="#metadata">Reproducibility</a></nav></header>
+<aside class="notice"><p><strong>Human approval pending.</strong> Cases were authored by agents and independently reviewed by another agent. Labels are synthetic and have not been approved by a human. These observations describe this small authored sample; they do not establish performance on real client data.</p></aside>
+<div class="cards"><article class="card"><div class="label">Candidate selected on calibration</div><div class="model-stat">qwen2.5-coder:7b</div><p>Chosen before holdout using errors, false passes, then macro F1.</p></article><article class="card"><div class="label">Selected judge · holdout label matches</div><div class="stat">12 / 25</div><p>48.0% exact agreement across all 25 cases, including errors.</p></article><article class="card"><div class="label">Training decision</div><div class="model-stat">Fine-tuning deferred</div><p>Obtain human-approved representative labels and fresh validation first.</p></article></div>
+<section class="section" id="holdout"><h2>Holdout observations</h2><p class="intro">25 unseen policy families: 9 pass, 10 fail, 6 review. Both models are shown as prespecified comparisons. The selected candidate remains the one chosen from calibration; any new preference based on this table would need fresh validation.</p>
+<div class="table-wrap"><table><caption>Both judges received the same 25 frozen holdout cases.</caption><thead><tr><th scope="col">Judge</th><th scope="col">Exact label agreement<br>All cases</th><th scope="col">Macro F1</th><th scope="col">False passes<br>Fail + review labels</th><th scope="col">Routed fail/review<br>Fail + review labels</th><th scope="col">False alarms<br>Pass labels</th><th scope="col">Pass recall<br>Pass labels</th><th scope="col">Errors<br>All cases</th><th scope="col">Quote integrity<br>Exact source matches</th><th scope="col">Evidence gaps<br>All cases</th><th scope="col">Median<br>Time / case</th></tr></thead><tbody><tr class="selected"><td><strong>qwen2.5-coder:7b</strong><span class="pill">Selected on calibration</span></td><td class="num">12/25 (48.0%)</td><td class="num">0.482</td><td class="num">0/16 (0.0%)</td><td class="num">16/16 (100.0%)</td><td class="num">6/9 (66.7%)</td><td class="num">3/9 (33.3%)</td><td class="num">0/25 (0.0%)</td><td class="num">30/33 (90.9%)</td><td class="num">8/25 (32.0%)</td><td class="num">11.9 s</td></tr><tr class=""><td><strong>qwen2.5:7b</strong></td><td class="num">9/25 (36.0%)</td><td class="num">0.369</td><td class="num">0/16 (0.0%)</td><td class="num">16/16 (100.0%)</td><td class="num">7/9 (77.8%)</td><td class="num">2/9 (22.2%)</td><td class="num">0/25 (0.0%)</td><td class="num">38/48 (79.2%)</td><td class="num">11/25 (44.0%)</td><td class="num">12.4 s</td></tr></tbody></table></div>
+<p class="notes">Exact agreement uses the final verdict after citation validation. False passes are pass verdicts on expected fail or review cases; the denominator is all 16 such holdout cases. False alarms are fail or review verdicts on the 9 expected pass cases. Pass recall counts how many expected pass cases the judge actually accepts. Zero false passes alone can result from accepting no answers and does not establish useful judging. Errors are reported separately and remain in the agreement denominator. Macro F1 averages pass, fail, and review F1; an error receives no label-match credit. Routed fail/review counts expected fail/review cases sent to either fail or review. Evidence gaps count cases lacking a cited finding for one or more low-scored criteria.</p></section>
+<section class="section" id="calibration"><h2>Selection made before holdout</h2><p class="intro">23 calibration cases: 8 pass, 10 fail, 5 review. <strong>qwen2.5-coder:7b</strong> was recorded on 14 Oct 2026, 11:38 PM IST. Selection used only these calibration results.</p>
+<div class="table-wrap"><table><caption>Both judges received the same 23 frozen calibration cases.</caption><thead><tr><th scope="col">Judge</th><th scope="col">Exact label agreement<br>All cases</th><th scope="col">Macro F1</th><th scope="col">False passes<br>Fail + review labels</th><th scope="col">Routed fail/review<br>Fail + review labels</th><th scope="col">False alarms<br>Pass labels</th><th scope="col">Pass recall<br>Pass labels</th><th scope="col">Errors<br>All cases</th><th scope="col">Quote integrity<br>Exact source matches</th><th scope="col">Evidence gaps<br>All cases</th><th scope="col">Median<br>Time / case</th></tr></thead><tbody><tr class="selected"><td><strong>qwen2.5-coder:7b</strong><span class="pill">Selected on calibration</span></td><td class="num">14/23 (60.9%)</td><td class="num">0.610</td><td class="num">0/15 (0.0%)</td><td class="num">15/15 (100.0%)</td><td class="num">5/8 (62.5%)</td><td class="num">3/8 (37.5%)</td><td class="num">0/23 (0.0%)</td><td class="num">21/25 (84.0%)</td><td class="num">8/23 (34.8%)</td><td class="num">10.9 s</td></tr><tr class=""><td><strong>qwen2.5:7b</strong></td><td class="num">10/23 (43.5%)</td><td class="num">0.360</td><td class="num">0/15 (0.0%)</td><td class="num">15/15 (100.0%)</td><td class="num">8/8 (100.0%)</td><td class="num">0/8 (0.0%)</td><td class="num">0/23 (0.0%)</td><td class="num">27/34 (79.4%)</td><td class="num">8/23 (34.8%)</td><td class="num">10.7 s</td></tr></tbody></table></div>
+<p class="notes">Prespecified rule: fewest errors, then fewest false passes, then highest macro F1; lexical model name breaks ties. The renderer verifies the selection’s file hashes, runtime binding, and timestamp before producing this report. Compare pass recall and false alarms alongside false passes: a judge that accepts no correct answers can still make zero false passes.</p></section>
+<section class="section" id="matrices"><h2>Where holdout labels differed</h2><p class="intro">Each matrix contains all 25 cases. Green cells are exact label matches. A review escalation can route a faulty answer to a person while still differing from its expected fail label.</p><div class="matrix-grid">
+<article class="matrix"><h3>qwen2.5-coder:7b</h3><span class="pill">Selected before holdout</span><div class="table-wrap"><table><caption>Rows: expected label · Columns: final predicted verdict</caption><thead><tr><th scope="col">Expected</th><th scope="col">Pass</th><th scope="col">Fail</th><th scope="col">Review</th><th scope="col">Error</th></tr></thead><tbody><tr><th scope="row">Pass</th><td class="diagonal">3</td><td class="num">2</td><td class="num">4</td><td class="num">0</td></tr><tr><th scope="row">Fail</th><td class="num">0</td><td class="diagonal">5</td><td class="num">5</td><td class="num">0</td></tr><tr><th scope="row">Review</th><td class="num">0</td><td class="num">2</td><td class="diagonal">4</td><td class="num">0</td></tr></tbody></table></div><p>Fail → pass: 0; review → pass: 0. Errors stay in the 25-case denominator.</p></article>
+<article class="matrix"><h3>qwen2.5:7b</h3><div class="table-wrap"><table><caption>Rows: expected label · Columns: final predicted verdict</caption><thead><tr><th scope="col">Expected</th><th scope="col">Pass</th><th scope="col">Fail</th><th scope="col">Review</th><th scope="col">Error</th></tr></thead><tbody><tr><th scope="row">Pass</th><td class="diagonal">2</td><td class="num">0</td><td class="num">7</td><td class="num">0</td></tr><tr><th scope="row">Fail</th><td class="num">0</td><td class="diagonal">4</td><td class="num">6</td><td class="num">0</td></tr><tr><th scope="row">Review</th><td class="num">0</td><td class="num">3</td><td class="diagonal">3</td><td class="num">0</td></tr></tbody></table></div><p>Fail → pass: 0; review → pass: 0. Errors stay in the 25-case denominator.</p></article>
+</div></section>
+<section class="section" id="reasoning"><h2>Quote matching is only an integrity check</h2><p class="intro">Quote integrity counts findings whose quoted text exists as an exact substring in the cited reference. It does not establish that the quote logically supports the finding. Passing this check cannot certify sound reasoning.</p>
+<p class="intro">A separate agent reviewed 22 calibration disagreement cases. This audit covers a subset of rationales and findings; it does not assess all cases or provide human-approved labels. Suggested verdicts are qualitative review suggestions and do not change the frozen benchmark metrics. A review escalation may remain procedurally justified by invalid or missing evidence even when the finding’s reasoning is faulty.</p>
+<p><strong>qwen2.5-coder:7b</strong>: 9 of 9 calibration disagreement cases reviewed; 9 reviewed cases have reported reasoning or citation errors. These counts describe this review subset.</p>
+<details><summary>qwen2.5-coder:7b · reported reasoning and citation-error examples</summary><div><article class="audit-item"><h3>bench-039</h3><ul><li>The answer&#x27;s nine available places contradicts 12 - 3 - 2 = 7; groundedness was incorrectly rated 3.</li><li>The finding invents a requirement to show the calculation. The actual requirement asks for the correct subtraction, not written working.</li></ul><p class="notes">Agent-suggested document verdict: fail. Review routing is supported by the evidence protocol. Human review required.</p></article><article class="audit-item"><h3>bench-008</h3><ul><li>The answer explicitly says a free badge grants admission, contradicting the source&#x27;s ticket requirement; it does address the question, but incorrectly.</li><li>The instruction-following quotation is taken from the answer, not from the cited showcase-badge reference.</li><li>The judge confuses the reference&#x27;s souvenir explanation with the answer and omits a cited groundedness finding.</li></ul><p class="notes">Agent-suggested document verdict: fail. Review routing is supported by the evidence protocol. Human review required.</p></article><article class="audit-item"><h3>bench-047</h3><ul><li>The answer explicitly states Wednesday, 7 June, the next open day. The claimed omission of the exact date is false.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article><article class="audit-item"><h3>bench-036</h3><ul><li>NONE is exactly the uppercase placeholder required by PN1 and is the complete response required by the question.</li><li>Requiring the answer to explain that NONE is a placeholder contradicts the requirement to respond only with the placeholder.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article><article class="audit-item"><h3>bench-010</h3><ul><li>The source makes day 10 the request-submission deadline, not processing time or a guaranteed payment date.</li><li>The answer&#x27;s guarantee of payment by day 10 is unsupported; the judge incorrectly describes day 10 as processing time and rates groundedness 3.</li></ul><p class="notes">Agent-suggested document verdict: fail. Review routing is supported by the evidence protocol. Human review required.</p></article><article class="audit-item"><h3>bench-014</h3><ul><li>The required exact [CQ7] citation is absent, although the judge says the answer follows the citation format.</li><li>Repeating the product name is not an explicit requirement; the claimed completeness weakness misses the actual citation violation.</li></ul><p class="notes">Agent-suggested document verdict: fail. Review routing is supported by the evidence protocol. Human review required.</p></article><article class="audit-item"><h3>bench-042</h3><ul><li>If your basket includes chilled groceries covers mixed baskets; only shelf-stable groceries explicitly restricts eligible baskets.</li><li>The finding falsely claims the answer omits the chilled/mixed-basket eligibility distinction.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article><article class="audit-item"><h3>bench-041</h3><ul><li>The answer explicitly gives the correct total, 22 tokens, and components 18 + 4.</li><li>The quoted prices yield 3 stands x 3 tokens x 2 days = 18, plus 2 chargeable cables x 1 token x 2 days = 4. The judge falsely claims these were not added.</li><li>The requirement asks for total tokens; it does not require restating the number of days.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article><article class="audit-item"><h3>bench-005</h3><ul><li>Monday is explicitly named as the deadline, and Friday then Monday correctly counts two working days after Thursday.</li><li>The finding falsely claims the answer gives only a sequence without naming the deadline day.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article></div></details>
+<p><strong>qwen2.5:7b</strong>: 13 of 13 calibration disagreement cases reviewed; 13 reviewed cases have reported reasoning or citation errors. These counts describe this review subset.</p>
+<details><summary>qwen2.5:7b · reported reasoning and citation-error examples</summary><div><article class="audit-item"><h3>bench-039</h3><ul><li>The instruction-following finding correctly identifies failure to subtract reserved places; 12 - 3 - 2 = 7 rather than nine.</li><li>Groundedness 4 is inconsistent with the answer&#x27;s incorrect count. Missing completeness evidence causes the validated review escalation.</li></ul><p class="notes">Agent-suggested document verdict: fail. Review routing is supported by the evidence protocol. Human review required.</p></article><article class="audit-item"><h3>bench-027</h3><ul><li>The answer explicitly states that the separate member credential does not count toward the four-ticket limit, contrary to the completeness finding.</li><li>The requirement explicitly prohibits penalizing accurate extra explanation alone; the added credential explanation is supported.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article><article class="audit-item"><h3>bench-008</h3><ul><li>The groundedness finding correctly identifies the badge/ticket contradiction and warrants a failure rating.</li><li>The extra instruction finding cites nonexistent reference requirements; the quoted text is an actual requirement but is not part of the cited reference corpus.</li><li>The embedded grading instruction is properly disregarded; reporting it as extra cited evidence unnecessarily triggers the quote gate.</li></ul><p class="notes">Agent-suggested document verdict: fail. Review routing is supported by the evidence protocol. Human review required.</p></article><article class="audit-item"><h3>bench-006</h3><ul><li>The answer explicitly says including during the interlude. The claimed omission of the interlude restriction is false.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article><article class="audit-item"><h3>bench-048</h3><ul><li>The source requires 17:00 for club members, whereas the answer gives the nonmember deadline 15:00.</li><li>The finding flags absence of the required 17:00 time, but the rationale incorrectly calls the answer&#x27;s deadline correct and frames a contradictory time as merely an unspecified time.</li><li>Groundedness 3 and instruction-following 4 understate the direct deadline contradiction. Missing completeness evidence causes the validated review escalation.</li></ul><p class="notes">Agent-suggested document verdict: fail. Review routing is supported by the evidence protocol. Human review required.</p></article><article class="audit-item"><h3>bench-018</h3><ul><li>The finding correctly identifies the omitted maximum booking length of 90 minutes.</li><li>This is an explicitly requested available fact; the frozen rubric calls the omission major, requiring completeness 0-1 rather than 2. The review verdict is caused by under-rating severity, not invalid evidence.</li></ul><p class="notes">Agent-suggested document verdict: fail. Review routing is unsupported in this agent review. Human review required.</p></article><article class="audit-item"><h3>bench-047</h3><ul><li>Wednesday, 7 June, the next open day directly gives the refresh date after applying the closure rule.</li><li>The judge invents a requirement to additionally say that the stated date is the scheduled refresh date; the question only asks for that date.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article><article class="audit-item"><h3>bench-036</h3><ul><li>NONE alone fully follows the exact-placeholder-only instruction.</li><li>Adding an explanation that it is the only text to enter would violate that requirement. The finding invents an unnecessary explanation requirement.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article><article class="audit-item"><h3>bench-010</h3><ul><li>The completeness finding correctly identifies conflation of the request deadline with the payment deadline and gives completeness 0.</li><li>Groundedness 4 is inconsistent with the unsupported guaranteed payment by day 10; the source only guarantees a request window and processing after approval.</li><li>Missing instruction-following evidence causes the validated review escalation despite a substantive failure score.</li></ul><p class="notes">Agent-suggested document verdict: fail. Review routing is supported by the evidence protocol. Human review required.</p></article><article class="audit-item"><h3>bench-042</h3><ul><li>The answer includes chilled groceries and only shelf-stable groceries wording, which correctly excludes mixed baskets with chilled items.</li><li>The finding invents a conflict: the reference agrees that an all-chilled basket is ineligible. It does not contradict the answer.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article><article class="audit-item"><h3>bench-003</h3><ul><li>The answer explicitly names courier handoff twice as the cutoff and states that packing does not itself prevent cancellation.</li><li>All three findings falsely claim the cutoff is omitted despite its explicit presence.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article><article class="audit-item"><h3>bench-041</h3><ul><li>The answer explicitly gives 22 total tokens and the costs of stands (18) and chargeable cables (4). The rationale falsely says the cable cost is absent.</li><li>The source calculation is 3 x 3 x 2 = 18 for stands and (4 - 2) x 1 x 2 = 4 for cables.</li><li>The requirement asks only for total tokens; the judge invents a requirement for a more detailed calculation process.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article><article class="audit-item"><h3>bench-005</h3><ul><li>The answer explicitly identifies Monday and counts Friday as the first working day and Monday as the second.</li><li>The finding falsely claims no working-day calculation is stated and invents a requirement to restate the working-day definition.</li></ul><p class="notes">Agent-suggested document verdict: pass. Review routing is unsupported in this agent review. Human review required.</p></article></div></details>
+<details><summary>Complete bound semantic-audit data</summary><div><pre>{
+  &quot;run_sha256&quot;: {
+    &quot;qwen2.5-coder:7b&quot;: &quot;1d15cff6872f02be1851ebd48d70f09a70d77b455c1c7024724c22dd4d252cac&quot;,
+    &quot;qwen2.5:7b&quot;: &quot;b7b11b83f3c0ff384d346a0b6d5e7c34942c38ef67b5868a5d76be6d824eabf9&quot;
+  },
+  &quot;reviews&quot;: [
+    {
+      &quot;model&quot;: &quot;qwen2.5-coder:7b&quot;,
+      &quot;id&quot;: &quot;bench-039&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The answer&#x27;s nine available places contradicts 12 - 3 - 2 = 7; groundedness was incorrectly rated 3.&quot;,
+        &quot;The finding invents a requirement to show the calculation. The actual requirement asks for the correct subtraction, not written working.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;fail&quot;,
+      &quot;review_routing_supported&quot;: true
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5-coder:7b&quot;,
+      &quot;id&quot;: &quot;bench-008&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The answer explicitly says a free badge grants admission, contradicting the source&#x27;s ticket requirement; it does address the question, but incorrectly.&quot;,
+        &quot;The instruction-following quotation is taken from the answer, not from the cited showcase-badge reference.&quot;,
+        &quot;The judge confuses the reference&#x27;s souvenir explanation with the answer and omits a cited groundedness finding.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;fail&quot;,
+      &quot;review_routing_supported&quot;: true
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5-coder:7b&quot;,
+      &quot;id&quot;: &quot;bench-047&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The answer explicitly states Wednesday, 7 June, the next open day. The claimed omission of the exact date is false.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;,
+      &quot;review_routing_supported&quot;: false
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5-coder:7b&quot;,
+      &quot;id&quot;: &quot;bench-036&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;NONE is exactly the uppercase placeholder required by PN1 and is the complete response required by the question.&quot;,
+        &quot;Requiring the answer to explain that NONE is a placeholder contradicts the requirement to respond only with the placeholder.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;,
+      &quot;review_routing_supported&quot;: false
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5-coder:7b&quot;,
+      &quot;id&quot;: &quot;bench-010&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The source makes day 10 the request-submission deadline, not processing time or a guaranteed payment date.&quot;,
+        &quot;The answer&#x27;s guarantee of payment by day 10 is unsupported; the judge incorrectly describes day 10 as processing time and rates groundedness 3.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;fail&quot;,
+      &quot;review_routing_supported&quot;: true
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5-coder:7b&quot;,
+      &quot;id&quot;: &quot;bench-014&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The required exact [CQ7] citation is absent, although the judge says the answer follows the citation format.&quot;,
+        &quot;Repeating the product name is not an explicit requirement; the claimed completeness weakness misses the actual citation violation.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;fail&quot;,
+      &quot;review_routing_supported&quot;: true
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5-coder:7b&quot;,
+      &quot;id&quot;: &quot;bench-042&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;If your basket includes chilled groceries covers mixed baskets; only shelf-stable groceries explicitly restricts eligible baskets.&quot;,
+        &quot;The finding falsely claims the answer omits the chilled/mixed-basket eligibility distinction.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;,
+      &quot;review_routing_supported&quot;: false
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5-coder:7b&quot;,
+      &quot;id&quot;: &quot;bench-041&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The answer explicitly gives the correct total, 22 tokens, and components 18 + 4.&quot;,
+        &quot;The quoted prices yield 3 stands x 3 tokens x 2 days = 18, plus 2 chargeable cables x 1 token x 2 days = 4. The judge falsely claims these were not added.&quot;,
+        &quot;The requirement asks for total tokens; it does not require restating the number of days.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;,
+      &quot;review_routing_supported&quot;: false
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5-coder:7b&quot;,
+      &quot;id&quot;: &quot;bench-005&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;Monday is explicitly named as the deadline, and Friday then Monday correctly counts two working days after Thursday.&quot;,
+        &quot;The finding falsely claims the answer gives only a sequence without naming the deadline day.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;,
+      &quot;review_routing_supported&quot;: false
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-039&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: true,
+      &quot;review_routing_supported&quot;: true,
+      &quot;reasoning_errors&quot;: [
+        &quot;The instruction-following finding correctly identifies failure to subtract reserved places; 12 - 3 - 2 = 7 rather than nine.&quot;,
+        &quot;Groundedness 4 is inconsistent with the answer&#x27;s incorrect count. Missing completeness evidence causes the validated review escalation.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;fail&quot;
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-027&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;review_routing_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The answer explicitly states that the separate member credential does not count toward the four-ticket limit, contrary to the completeness finding.&quot;,
+        &quot;The requirement explicitly prohibits penalizing accurate extra explanation alone; the added credential explanation is supported.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-008&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: true,
+      &quot;review_routing_supported&quot;: true,
+      &quot;reasoning_errors&quot;: [
+        &quot;The groundedness finding correctly identifies the badge/ticket contradiction and warrants a failure rating.&quot;,
+        &quot;The extra instruction finding cites nonexistent reference requirements; the quoted text is an actual requirement but is not part of the cited reference corpus.&quot;,
+        &quot;The embedded grading instruction is properly disregarded; reporting it as extra cited evidence unnecessarily triggers the quote gate.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;fail&quot;
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-006&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;review_routing_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The answer explicitly says including during the interlude. The claimed omission of the interlude restriction is false.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-048&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: true,
+      &quot;review_routing_supported&quot;: true,
+      &quot;reasoning_errors&quot;: [
+        &quot;The source requires 17:00 for club members, whereas the answer gives the nonmember deadline 15:00.&quot;,
+        &quot;The finding flags absence of the required 17:00 time, but the rationale incorrectly calls the answer&#x27;s deadline correct and frames a contradictory time as merely an unspecified time.&quot;,
+        &quot;Groundedness 3 and instruction-following 4 understate the direct deadline contradiction. Missing completeness evidence causes the validated review escalation.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;fail&quot;
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-018&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: true,
+      &quot;review_routing_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The finding correctly identifies the omitted maximum booking length of 90 minutes.&quot;,
+        &quot;This is an explicitly requested available fact; the frozen rubric calls the omission major, requiring completeness 0-1 rather than 2. The review verdict is caused by under-rating severity, not invalid evidence.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;fail&quot;
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-047&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;review_routing_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;Wednesday, 7 June, the next open day directly gives the refresh date after applying the closure rule.&quot;,
+        &quot;The judge invents a requirement to additionally say that the stated date is the scheduled refresh date; the question only asks for that date.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-036&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;review_routing_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;NONE alone fully follows the exact-placeholder-only instruction.&quot;,
+        &quot;Adding an explanation that it is the only text to enter would violate that requirement. The finding invents an unnecessary explanation requirement.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-010&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: true,
+      &quot;review_routing_supported&quot;: true,
+      &quot;reasoning_errors&quot;: [
+        &quot;The completeness finding correctly identifies conflation of the request deadline with the payment deadline and gives completeness 0.&quot;,
+        &quot;Groundedness 4 is inconsistent with the unsupported guaranteed payment by day 10; the source only guarantees a request window and processing after approval.&quot;,
+        &quot;Missing instruction-following evidence causes the validated review escalation despite a substantive failure score.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;fail&quot;
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-042&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;review_routing_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The answer includes chilled groceries and only shelf-stable groceries wording, which correctly excludes mixed baskets with chilled items.&quot;,
+        &quot;The finding invents a conflict: the reference agrees that an all-chilled basket is ineligible. It does not contradict the answer.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-003&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;review_routing_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The answer explicitly names courier handoff twice as the cutoff and states that packing does not itself prevent cancellation.&quot;,
+        &quot;All three findings falsely claim the cutoff is omitted despite its explicit presence.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-041&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;review_routing_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The answer explicitly gives 22 total tokens and the costs of stands (18) and chargeable cables (4). The rationale falsely says the cable cost is absent.&quot;,
+        &quot;The source calculation is 3 x 3 x 2 = 18 for stands and (4 - 2) x 1 x 2 = 4 for cables.&quot;,
+        &quot;The requirement asks only for total tokens; the judge invents a requirement for a more detailed calculation process.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;
+    },
+    {
+      &quot;model&quot;: &quot;qwen2.5:7b&quot;,
+      &quot;id&quot;: &quot;bench-005&quot;,
+      &quot;verdict_supported&quot;: false,
+      &quot;findings_supported&quot;: false,
+      &quot;review_routing_supported&quot;: false,
+      &quot;reasoning_errors&quot;: [
+        &quot;The answer explicitly identifies Monday and counts Friday as the first working day and Monday as the second.&quot;,
+        &quot;The finding falsely claims no working-day calculation is stated and invents a requirement to restate the working-day definition.&quot;
+      ],
+      &quot;suggested_verdict&quot;: &quot;pass&quot;
+    }
+  ]
+}</pre></div></details>
+</section>
+<section class="section decision"><h2>What these results support</h2><p><strong>Fine-tuning deferred; need human-approved representative labels and fresh validation.</strong></p><p>The calibration-selected judge matched 12 of the 25 heldout labels. It produced 0 false passes among 16 expected fail/review cases, 6 false alarms among 9 expected pass cases, and 0 errors. These are observed sample counts.</p><ul><li>Have a human approve representative labels and verify findings against their source passages.</li><li>Diagnose repeated reasoning errors and repair citation/evidence scaffolding after this frozen benchmark, using a new dataset version to evaluate changes.</li><li>Use a fresh untouched validation set after any prompt, model, or training changes. Keep this frozen holdout separate from training.</li></ul><p class="muted">No fine-tuning has occurred in this benchmark. Neither software checks nor these synthetic label matches establish readiness for unattended client audits.</p></section>
+<section class="section" id="metadata"><h2>Reproducibility details</h2><p class="intro">All four complete runs use the same frozen prompt, evaluator source, Ollama version, and generation settings. Model digests are stable across splits. Policy families are disjoint between calibration and holdout.</p>
+<details><summary>Frozen dataset, prompt, and selection</summary><div><pre>
+{
+  &quot;version&quot;: 1,
+  &quot;label_provenance&quot;: &quot;Synthetic cases authored by agents and independently reviewed by another agent; human approval pending.&quot;,
+  &quot;human_approved&quot;: false,
+  &quot;prompt_version&quot;: &quot;2&quot;,
+  &quot;prompt_sha256&quot;: &quot;f7540bd6cb25b3e5f69fd350407b39aeb91451a545b411286beee4d1ed43cd12&quot;,
+  &quot;core_sha256&quot;: &quot;607396a68aec731e37b2616c7c6e9b4bdc34dafdc5ed664184e072d38db20e3e&quot;,
+  &quot;gold_sha256&quot;: &quot;30535cc084dca477343f75d61456931b60a812f7309965aad0aa971348b9bc08&quot;,
+  &quot;splits&quot;: {
+    &quot;calibration&quot;: {
+      &quot;count&quot;: 23,
+      &quot;sha256&quot;: &quot;dca73de05256008ec5e44bfa5ff0933e6642b08bdae209de294d92ab3245ea21&quot;,
+      &quot;ids&quot;: [
+        &quot;bench-039&quot;,
+        &quot;bench-013&quot;,
+        &quot;bench-027&quot;,
+        &quot;bench-045&quot;,
+        &quot;bench-046&quot;,
+        &quot;bench-008&quot;,
+        &quot;bench-017&quot;,
+        &quot;bench-006&quot;,
+        &quot;bench-004&quot;,
+        &quot;bench-048&quot;,
+        &quot;bench-018&quot;,
+        &quot;bench-047&quot;,
+        &quot;bench-036&quot;,
+        &quot;bench-030&quot;,
+        &quot;bench-010&quot;,
+        &quot;bench-019&quot;,
+        &quot;bench-014&quot;,
+        &quot;bench-042&quot;,
+        &quot;bench-024&quot;,
+        &quot;bench-003&quot;,
+        &quot;bench-031&quot;,
+        &quot;bench-041&quot;,
+        &quot;bench-005&quot;
+      ],
+      &quot;families&quot;: [
+        &quot;b_collage_capacity&quot;,
+        &quot;b_ticket_collection_conflict&quot;,
+        &quot;b_gallery_guest_limit&quot;,
+        &quot;b_notice_board_two_steps&quot;,
+        &quot;mossfield_volunteer_onboarding&quot;,
+        &quot;b_showcase_badge_admission&quot;,
+        &quot;b_blue_theme_entitlement&quot;,
+        &quot;b_balcony_late_entry&quot;,
+        &quot;willowbank_room_capacity&quot;,
+        &quot;b_backdrop_member_deadline&quot;,
+        &quot;elmbridge_room_booking&quot;,
+        &quot;b_display_label_closure&quot;,
+        &quot;parcelnest_apartment_placeholder&quot;,
+        &quot;b_seat_response_format&quot;,
+        &quot;ambership_refund_timing&quot;,
+        &quot;juniperparcel_saturday_hours&quot;,
+        &quot;cloudquill_attachment_citation&quot;,
+        &quot;mapletide_locker_eligibility&quot;,
+        &quot;b_materials_pack_deadline&quot;,
+        &quot;meadowcart_cancellation&quot;,
+        &quot;briarroom_workshop_kit&quot;,
+        &quot;b_stands_and_cables&quot;,
+        &quot;b_enrollment_change_deadline&quot;
+      ],
+      &quot;labels&quot;: {
+        &quot;pass&quot;: 8,
+        &quot;fail&quot;: 10,
+        &quot;review&quot;: 5
+      }
+    },
+    &quot;holdout&quot;: {
+      &quot;count&quot;: 25,
+      &quot;sha256&quot;: &quot;1320d6ce69fd20f2848372682dc9ad5c4183eece8d865f1dacb39d917c8e1ef6&quot;,
+      &quot;ids&quot;: [
+        &quot;bench-022&quot;,
+        &quot;bench-012&quot;,
+        &quot;bench-021&quot;,
+        &quot;bench-040&quot;,
+        &quot;bench-032&quot;,
+        &quot;bench-023&quot;,
+        &quot;bench-038&quot;,
+        &quot;bench-001&quot;,
+        &quot;bench-043&quot;,
+        &quot;bench-026&quot;,
+        &quot;bench-033&quot;,
+        &quot;bench-002&quot;,
+        &quot;bench-016&quot;,
+        &quot;bench-029&quot;,
+        &quot;bench-034&quot;,
+        &quot;bench-009&quot;,
+        &quot;bench-007&quot;,
+        &quot;bench-011&quot;,
+        &quot;bench-037&quot;,
+        &quot;bench-015&quot;,
+        &quot;bench-020&quot;,
+        &quot;bench-028&quot;,
+        &quot;bench-035&quot;,
+        &quot;bench-044&quot;,
+        &quot;bench-025&quot;
+      ],
+      &quot;families&quot;: [
+        &quot;lanternedit_e17_version&quot;,
+        &quot;pixelforge_draft_recovery&quot;,
+        &quot;noteharbor_offline_rename&quot;,
+        &quot;b_maker_companion_limit&quot;,
+        &quot;b_transfer_processing_conflict&quot;,
+        &quot;b_monthly_downgrade&quot;,
+        &quot;canvasdock_missing_font&quot;,
+        &quot;riverlight_workshop_price&quot;,
+        &quot;b_pottery_instructor_unknown&quot;,
+        &quot;oakhollow_pickup_boundary&quot;,
+        &quot;b_session_change_channel&quot;,
+        &quot;b_display_name_editing&quot;,
+        &quot;starlinghall_table_hire&quot;,
+        &quot;b_pause_saved_layouts&quot;,
+        &quot;fernwick_tea_admission&quot;,
+        &quot;puzzlepier_opened_returns&quot;,
+        &quot;b_renewal_template&quot;,
+        &quot;b_screen_weekend_definition&quot;,
+        &quot;brightcrate_missing_claim&quot;,
+        &quot;cedarlane_reservation_language&quot;,
+        &quot;brookside_repair_group&quot;,
+        &quot;b_easel_substitution&quot;,
+        &quot;pinebrook_printing&quot;,
+        &quot;frostpebble_bowl_variant&quot;,
+        &quot;b_lobby_refresh_frequency&quot;
+      ],
+      &quot;labels&quot;: {
+        &quot;pass&quot;: 9,
+        &quot;fail&quot;: 10,
+        &quot;review&quot;: 6
+      }
+    }
+  },
+  &quot;selected_model&quot;: &quot;qwen2.5-coder:7b&quot;,
+  &quot;selection_created_at&quot;: &quot;2026-10-14T18:08:33.684444+00:00&quot;,
+  &quot;selection_rule&quot;: &quot;Fewest errors, then fewest false passes, then highest macro F1; lexical model name breaks ties.&quot;
+}
+</pre></div></details>
+<details><summary>qwen2.5-coder:7b · model digest and runtime</summary><div><pre>{
+  &quot;configuration&quot;: {
+    &quot;prompt_sha256&quot;: &quot;f7540bd6cb25b3e5f69fd350407b39aeb91451a545b411286beee4d1ed43cd12&quot;,
+    &quot;prompt_version&quot;: &quot;2&quot;,
+    &quot;core_sha256&quot;: &quot;607396a68aec731e37b2616c7c6e9b4bdc34dafdc5ed664184e072d38db20e3e&quot;,
+    &quot;ollama_version&quot;: &quot;0.40.4&quot;,
+    &quot;model_digest&quot;: &quot;dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364&quot;,
+    &quot;model_details&quot;: {
+      &quot;parent_model&quot;: &quot;&quot;,
+      &quot;format&quot;: &quot;gguf&quot;,
+      &quot;family&quot;: &quot;qwen2&quot;,
+      &quot;families&quot;: [
+        &quot;qwen2&quot;
+      ],
+      &quot;parameter_size&quot;: &quot;7.6B&quot;,
+      &quot;quantization_level&quot;: &quot;Q4_K_M&quot;,
+      &quot;context_length&quot;: 32768,
+      &quot;embedding_length&quot;: 3584,
+      &quot;runner&quot;: &quot;ggml&quot;
+    },
+    &quot;temperature&quot;: 0,
+    &quot;seed&quot;: 42,
+    &quot;num_ctx&quot;: 8192,
+    &quot;num_predict&quot;: 1600,
+    &quot;base_url&quot;: &quot;http://127.0.0.1:11434&quot;
+  },
+  &quot;runs&quot;: {
+    &quot;calibration&quot;: {
+      &quot;generated_at&quot;: &quot;2026-10-14T17:58:39.541123+00:00&quot;,
+      &quot;total_measured_seconds&quot;: 315.78000000000065,
+      &quot;median_seconds_per_case&quot;: 10.85899999999856,
+      &quot;cases_with_invalid_quotes&quot;: 3,
+      &quot;cases_missing_criterion_evidence&quot;: 8
+    },
+    &quot;holdout&quot;: {
+      &quot;generated_at&quot;: &quot;2026-10-14T18:14:13.996763+00:00&quot;,
+      &quot;total_measured_seconds&quot;: 324.67199999999866,
+      &quot;median_seconds_per_case&quot;: 11.859000000000378,
+      &quot;cases_with_invalid_quotes&quot;: 3,
+      &quot;cases_missing_criterion_evidence&quot;: 8
+    }
+  }
+}</pre></div></details>
+<details><summary>qwen2.5:7b · model digest and runtime</summary><div><pre>{
+  &quot;configuration&quot;: {
+    &quot;prompt_sha256&quot;: &quot;f7540bd6cb25b3e5f69fd350407b39aeb91451a545b411286beee4d1ed43cd12&quot;,
+    &quot;prompt_version&quot;: &quot;2&quot;,
+    &quot;core_sha256&quot;: &quot;607396a68aec731e37b2616c7c6e9b4bdc34dafdc5ed664184e072d38db20e3e&quot;,
+    &quot;ollama_version&quot;: &quot;0.40.4&quot;,
+    &quot;model_digest&quot;: &quot;845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e&quot;,
+    &quot;model_details&quot;: {
+      &quot;parent_model&quot;: &quot;&quot;,
+      &quot;format&quot;: &quot;gguf&quot;,
+      &quot;family&quot;: &quot;qwen2&quot;,
+      &quot;families&quot;: [
+        &quot;qwen2&quot;
+      ],
+      &quot;parameter_size&quot;: &quot;7.6B&quot;,
+      &quot;quantization_level&quot;: &quot;Q4_K_M&quot;,
+      &quot;context_length&quot;: 32768,
+      &quot;embedding_length&quot;: 3584,
+      &quot;runner&quot;: &quot;ggml&quot;
+    },
+    &quot;temperature&quot;: 0,
+    &quot;seed&quot;: 42,
+    &quot;num_ctx&quot;: 8192,
+    &quot;num_predict&quot;: 1600,
+    &quot;base_url&quot;: &quot;http://127.0.0.1:11434&quot;
+  },
+  &quot;runs&quot;: {
+    &quot;calibration&quot;: {
+      &quot;generated_at&quot;: &quot;2026-10-14T18:03:55.506467+00:00&quot;,
+      &quot;total_measured_seconds&quot;: 278.0769999999975,
+      &quot;median_seconds_per_case&quot;: 10.703999999999724,
+      &quot;cases_with_invalid_quotes&quot;: 5,
+      &quot;cases_missing_criterion_evidence&quot;: 8
+    },
+    &quot;holdout&quot;: {
+      &quot;generated_at&quot;: &quot;2026-10-14T18:08:33.728568+00:00&quot;,
+      &quot;total_measured_seconds&quot;: 340.0919999999951,
+      &quot;median_seconds_per_case&quot;: 12.436999999999898,
+      &quot;cases_with_invalid_quotes&quot;: 7,
+      &quot;cases_missing_criterion_evidence&quot;: 11
+    }
+  }
+}</pre></div></details>
+</section><footer>Generated from verified completed results. All data remains local. Synthetic benchmark · human review required.</footer></main></body></html>

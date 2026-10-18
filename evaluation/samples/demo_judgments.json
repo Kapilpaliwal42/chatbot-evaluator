@@ -1,0 +1,126 @@
+{
+  "case_sha256": {
+    "shop-01-delivery": "818646e8c13b93eda9b6976545597454d82efd1c84a1dce33b2a6461268fe979",
+    "shop-02-returns": "5b1592c6c7a0fb6e2a3e6ce8c23bac026561f9ac72e1cc72294d6799c4bbb530",
+    "shop-03-reply-instructions": "9e3b7ff30a4a676cb8da8938a2d458674fb1cb2e76833d5e6364d01ca36336ea",
+    "shop-04-cancellation": "d4b1255588e7a311e06022f85d276c0dea24f178ace397869533139e5c3b25fc",
+    "shop-05-unknown-destination": "b6d4ccc1df9ec5109ee0d7ad3bfeb4f22b0d1179ccf63783883c183595c3e7f6",
+    "shop-06-conflicting-gift-cards": "217b07f98956766249a6e87f3460f9cf0acda18413f20ac45e709bffb871bbbc"
+  },
+  "judgments": {
+    "shop-01-delivery": {
+      "scores": {
+        "groundedness": 4,
+        "instruction_following": 4,
+        "completeness": 4
+      },
+      "rationale": "The answer accurately states the cutoff and delivery window and avoids promising a specific arrival date.",
+      "findings": [],
+      "needs_human_review": false,
+      "human_review_reasons": []
+    },
+    "shop-02-returns": {
+      "scores": {
+        "groundedness": 0,
+        "instruction_following": 3,
+        "completeness": 3
+      },
+      "rationale": "Both the 30-day deadline and unconditional shop-paid postage contradict the supplied return policy.",
+      "findings": [
+        {
+          "category": "groundedness",
+          "claim": "You have 30 calendar days to return an unused item.",
+          "reference_id": "returns-policy",
+          "quote": "Unused items in their original packaging may be returned within 14 calendar days of delivery.",
+          "explanation": "The reference permits 14 calendar days, while the answer invents a 30-day deadline."
+        },
+        {
+          "category": "groundedness",
+          "claim": "The shop pays return postage for every return.",
+          "reference_id": "returns-policy",
+          "quote": "Customers pay return postage unless the item arrived damaged or the shop sent the wrong item.",
+          "explanation": "The answer reverses the default payer and omits the limited exceptions."
+        }
+      ],
+      "needs_human_review": false,
+      "human_review_reasons": []
+    },
+    "shop-03-reply-instructions": {
+      "scores": {
+        "groundedness": 4,
+        "instruction_following": 1,
+        "completeness": 3
+      },
+      "rationale": "The preparation and dispatch-email statements are grounded, but the reply is in English and omits the required order placeholder.",
+      "findings": [
+        {
+          "category": "instruction_following",
+          "claim": "Hello! Your order is still being prepared. We will email you when it ships.",
+          "reference_id": "channel-reply-policy",
+          "quote": "Customer replies for this channel must be in Spanish and include the placeholder {order_id}.",
+          "explanation": "The entire answer is in English and contains no {order_id} placeholder, violating both explicit reply requirements."
+        }
+      ],
+      "needs_human_review": false,
+      "human_review_reasons": []
+    },
+    "shop-04-cancellation": {
+      "scores": {
+        "groundedness": 4,
+        "instruction_following": 3,
+        "completeness": 1
+      },
+      "rationale": "The cancellation instructions are accurate, but the answer omits the requested refund timing and destination despite explicit supporting policy.",
+      "findings": [
+        {
+          "category": "completeness",
+          "claim": "The answer stops after explaining how to cancel and gives no refund timing or destination.",
+          "reference_id": "cancellation-policy",
+          "quote": "After cancellation is confirmed, a refund is issued to the original payment method within 5–7 business days.",
+          "explanation": "The policy answers the second part of the question, but the response does not convey it."
+        }
+      ],
+      "needs_human_review": false,
+      "human_review_reasons": []
+    },
+    "shop-05-unknown-destination": {
+      "scores": {
+        "groundedness": 4,
+        "instruction_following": 4,
+        "completeness": 4
+      },
+      "rationale": "The answer accurately distinguishes the known domestic service from unspecified international coverage and gives the policy-supported confirmation step. A correct admission of an unknown does not itself require a failed or review judgment.",
+      "findings": [],
+      "needs_human_review": false,
+      "human_review_reasons": []
+    },
+    "shop-06-conflicting-gift-cards": {
+      "scores": {
+        "groundedness": 4,
+        "instruction_following": 4,
+        "completeness": 4
+      },
+      "rationale": "The answer faithfully reports the contradictory policies and requests human confirmation without inventing a precedence rule. The unresolved source conflict warrants review even though the answer is appropriate.",
+      "findings": [
+        {
+          "category": "groundedness",
+          "claim": "The gift-card policy says gift cards cannot be refunded, while the general refund policy allows refunds for unused gift cards within 7 calendar days of purchase.",
+          "reference_id": "gift-card-policy",
+          "quote": "Gift cards cannot be refunded.",
+          "explanation": "This rule conflicts with the allowance in general-refund-policy; the finding flags source ambiguity, not a false answer claim."
+        },
+        {
+          "category": "groundedness",
+          "claim": "The general refund policy allows refunds for unused gift cards within 7 calendar days of purchase.",
+          "reference_id": "general-refund-policy",
+          "quote": "Unused gift cards may be refunded within 7 calendar days of purchase.",
+          "explanation": "This allowance conflicts with the prohibition in gift-card-policy. Neither supplied reference establishes precedence."
+        }
+      ],
+      "needs_human_review": true,
+      "human_review_reasons": [
+        "The supplied gift-card and general refund policies contradict one another and contain no effective date or precedence rule."
+      ]
+    }
+  }
+}

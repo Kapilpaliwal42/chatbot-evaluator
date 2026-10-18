@@ -1,0 +1,69 @@
+{
+  "workflow_binding": {
+    "dataset_version": 1,
+    "gold_sha256": "30535cc084dca477343f75d61456931b60a812f7309965aad0aa971348b9bc08",
+    "splits": {
+      "calibration": "dca73de05256008ec5e44bfa5ff0933e6642b08bdae209de294d92ab3245ea21",
+      "holdout": "1320d6ce69fd20f2848372682dc9ad5c4183eece8d865f1dacb39d917c8e1ef6"
+    },
+    "configurations": {
+      "qwen2.5-coder:7b": {
+        "prompt_sha256": "f7540bd6cb25b3e5f69fd350407b39aeb91451a545b411286beee4d1ed43cd12",
+        "prompt_version": "2",
+        "core_sha256": "607396a68aec731e37b2616c7c6e9b4bdc34dafdc5ed664184e072d38db20e3e",
+        "ollama_version": "0.40.4",
+        "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+        "model_details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen2",
+          "families": [
+            "qwen2"
+          ],
+          "parameter_size": "7.6B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 32768,
+          "embedding_length": 3584,
+          "runner": "ggml"
+        },
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 8192,
+        "num_predict": 1600,
+        "base_url": "http://127.0.0.1:11434"
+      },
+      "qwen2.5:7b": {
+        "prompt_sha256": "f7540bd6cb25b3e5f69fd350407b39aeb91451a545b411286beee4d1ed43cd12",
+        "prompt_version": "2",
+        "core_sha256": "607396a68aec731e37b2616c7c6e9b4bdc34dafdc5ed664184e072d38db20e3e",
+        "ollama_version": "0.40.4",
+        "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "model_details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen2",
+          "families": [
+            "qwen2"
+          ],
+          "parameter_size": "7.6B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 32768,
+          "embedding_length": 3584,
+          "runner": "ggml"
+        },
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 8192,
+        "num_predict": 1600,
+        "base_url": "http://127.0.0.1:11434"
+      }
+    }
+  },
+  "selection_sha256": "411df0c41a4ab994a8b38526beb2d510cf9cd3bd274ad419e173b7137fdb08e8",
+  "run_sha256": {
+    "evaluation\\output\\benchmark\\coder-calibration\\results.json": "1d15cff6872f02be1851ebd48d70f09a70d77b455c1c7024724c22dd4d252cac",
+    "evaluation\\output\\benchmark\\general-calibration\\results.json": "b7b11b83f3c0ff384d346a0b6d5e7c34942c38ef67b5868a5d76be6d824eabf9",
+    "evaluation\\output\\benchmark\\coder-holdout\\results.json": "97fb177c025769126cecc1424d0ab8199a9a0c614827aabb1877faf95de38f01",
+    "evaluation\\output\\benchmark\\general-holdout\\results.json": "792edb75ca6fd1ba9a4d110d34a01f42b2574837d6b1b10405bf3edf2778a834"
+  }
+}

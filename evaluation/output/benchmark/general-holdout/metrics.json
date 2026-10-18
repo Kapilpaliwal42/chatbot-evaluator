@@ -1,0 +1,85 @@
+{
+  "total": 25,
+  "matched": 9,
+  "exact_agreement_all_cases": 0.36,
+  "successful_judgments": 25,
+  "error_count": 0,
+  "coverage": 1.0,
+  "macro_f1": 0.3689839572192513,
+  "class_metrics": {
+    "pass": {
+      "support": 9,
+      "precision": 1.0,
+      "recall": 0.2222222222222222,
+      "f1": 0.36363636363636365
+    },
+    "fail": {
+      "support": 10,
+      "precision": 0.5714285714285714,
+      "recall": 0.4,
+      "f1": 0.47058823529411764
+    },
+    "review": {
+      "support": 6,
+      "precision": 0.1875,
+      "recall": 0.5,
+      "f1": 0.2727272727272727
+    }
+  },
+  "confusion_matrix": {
+    "pass": {
+      "pass": 2,
+      "fail": 0,
+      "review": 7,
+      "error": 0
+    },
+    "fail": {
+      "pass": 0,
+      "fail": 4,
+      "review": 6,
+      "error": 0
+    },
+    "review": {
+      "pass": 0,
+      "fail": 3,
+      "review": 3,
+      "error": 0
+    }
+  },
+  "raw_score_confusion_matrix": {
+    "pass": {
+      "pass": 3,
+      "fail": 0,
+      "review": 6,
+      "error": 0
+    },
+    "fail": {
+      "pass": 0,
+      "fail": 7,
+      "review": 3,
+      "error": 0
+    },
+    "review": {
+      "pass": 0,
+      "fail": 6,
+      "review": 0,
+      "error": 0
+    }
+  },
+  "false_passes": 0,
+  "unsafe_cases": 16,
+  "false_pass_rate": 0.0,
+  "fail_to_pass": 0,
+  "review_to_pass": 0,
+  "unsafe_flagged": 16,
+  "unsafe_routing_rate": 1.0,
+  "false_alarms_on_pass": 7,
+  "quotes": 48,
+  "invalid_quotes": 10,
+  "quote_integrity_rate": 0.7916666666666666,
+  "cases_with_findings": 23,
+  "cases_with_invalid_quotes": 7,
+  "cases_missing_criterion_evidence": 11,
+  "median_seconds_per_case": 12.436999999999898,
+  "total_measured_seconds": 340.0919999999951
+}

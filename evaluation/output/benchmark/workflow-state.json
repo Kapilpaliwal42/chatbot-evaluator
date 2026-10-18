@@ -1,0 +1,8 @@
+{
+  "pid": 7876,
+  "status": "completed",
+  "phase": "comparison",
+  "updated_at": "2026-10-14T18:19:38.768884+00:00",
+  "detail": "Both calibration and untouched holdout splits are complete for both 7B models. Human review is pending.",
+  "comparison_path": "D:\\LocalAI\\agent\\evaluation\\output\\benchmark-comparison\\comparison.html"
+}

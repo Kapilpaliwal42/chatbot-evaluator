@@ -1,0 +1,9 @@
+[
+  {
+    "id": "bench-044",
+    "original_author_label": "review",
+    "resolved_label": "pass",
+    "reason": "FP1 supports both variant statuses and confirms the missing variant on order 41. The answer faithfully identifies what is known and unknown without inventing a shipping outcome; this satisfies the requirement.",
+    "reviewed_by": "Independent agent and primary agent; no human approval"
+  }
+]
