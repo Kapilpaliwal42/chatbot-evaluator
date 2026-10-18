@@ -31,6 +31,7 @@ python training/prepare_hf_data.py `
 
 ```python
 !pip install -U transformers datasets peft trl bitsandbytes accelerate
+!pip uninstall -y torchao
 !git clone <your-repository-url> /content/project
 %cd /content/project
 !python training/prepare_hf_data.py --dataset wandb/RAGTruth-processed \
