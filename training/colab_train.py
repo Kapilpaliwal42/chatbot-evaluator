@@ -8,6 +8,7 @@ validation, and final human-review routing.
 from __future__ import annotations
 
 import argparse
+import inspect
 import json
 from pathlib import Path
 
@@ -50,17 +51,38 @@ def main(argv: list[str] | None = None) -> int:
         r=16, lora_alpha=32, lora_dropout=0.05, bias="none",
         task_type="CAUSAL_LM", target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
     )
-    training = TrainingArguments(
-        output_dir=str(args.out), num_train_epochs=args.epochs,
-        per_device_train_batch_size=args.batch_size, gradient_accumulation_steps=16,
-        learning_rate=2e-4, logging_steps=10, save_strategy="epoch",
-        bf16=True, gradient_checkpointing=True, report_to="none",
-    )
-    trainer = SFTTrainer(
-        model=args.model, train_dataset=dataset, peft_config=lora,
-        processing_class=tokenizer, args=training, dataset_text_field="text",
-        max_seq_length=args.max_length,
-    )
+    trainer_kwargs = {
+        "model": args.model,
+        "train_dataset": dataset,
+        "peft_config": lora,
+    }
+    trainer_parameters = inspect.signature(SFTTrainer.__init__).parameters
+    if "processing_class" in trainer_parameters:
+        trainer_kwargs["processing_class"] = tokenizer
+    else:
+        trainer_kwargs["tokenizer"] = tokenizer
+    try:
+        from trl import SFTConfig
+    except ImportError:
+        SFTConfig = None
+    if SFTConfig is not None:
+        training = SFTConfig(
+            output_dir=str(args.out), num_train_epochs=args.epochs,
+            per_device_train_batch_size=args.batch_size, gradient_accumulation_steps=16,
+            learning_rate=2e-4, logging_steps=10, save_strategy="epoch",
+            bf16=True, gradient_checkpointing=True, report_to="none",
+            dataset_text_field="text", max_length=args.max_length,
+        )
+        trainer_kwargs["args"] = training
+    else:
+        training = TrainingArguments(
+            output_dir=str(args.out), num_train_epochs=args.epochs,
+            per_device_train_batch_size=args.batch_size, gradient_accumulation_steps=16,
+            learning_rate=2e-4, logging_steps=10, save_strategy="epoch",
+            bf16=True, gradient_checkpointing=True, report_to="none",
+        )
+        trainer_kwargs.update(args=training, dataset_text_field="text", max_seq_length=args.max_length)
+    trainer = SFTTrainer(**trainer_kwargs)
     trainer.train()
     trainer.save_model(str(args.out))
     tokenizer.save_pretrained(str(args.out))
