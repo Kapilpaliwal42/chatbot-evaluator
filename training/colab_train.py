@@ -24,10 +24,11 @@ def format_example(row: dict) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="QLoRA-train a grounding specialist in Colab.")
     parser.add_argument("--data", type=Path, required=True)
-    parser.add_argument("--model", default="Qwen/Qwen2.5-3B-Instruct")
+    parser.add_argument("--model", default="Qwen/Qwen2.5-Coder-7B-Instruct")
     parser.add_argument("--out", type=Path, default=Path("grounding-lora"))
     parser.add_argument("--epochs", type=float, default=2)
-    parser.add_argument("--max-length", type=int, default=2048)
+    parser.add_argument("--max-length", type=int, default=1536)
+    parser.add_argument("--batch-size", type=int, default=1)
     args = parser.parse_args(argv)
     try:
         from datasets import Dataset
@@ -50,9 +51,10 @@ def main(argv: list[str] | None = None) -> int:
         task_type="CAUSAL_LM", target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
     )
     training = TrainingArguments(
-        output_dir=str(args.out), num_train_epochs=args.epochs, per_device_train_batch_size=2,
-        gradient_accumulation_steps=8, learning_rate=2e-4, logging_steps=10,
-        save_strategy="epoch", bf16=True, report_to="none",
+        output_dir=str(args.out), num_train_epochs=args.epochs,
+        per_device_train_batch_size=args.batch_size, gradient_accumulation_steps=16,
+        learning_rate=2e-4, logging_steps=10, save_strategy="epoch",
+        bf16=True, gradient_checkpointing=True, report_to="none",
     )
     trainer = SFTTrainer(
         model=args.model, train_dataset=dataset, peft_config=lora,

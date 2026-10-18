@@ -36,7 +36,7 @@ python training/prepare_hf_data.py `
 !python training/prepare_hf_data.py --dataset wandb/RAGTruth-processed \
   --out training/ragtruth-grounding.jsonl --limit 10000
 !python training/colab_train.py --data training/ragtruth-grounding.jsonl \
-  --model Qwen/Qwen2.5-3B-Instruct --out training/grounding-lora
+  --model Qwen/Qwen2.5-Coder-7B-Instruct --out training/grounding-lora
 ```
 
 The output is a LoRA adapter. Evaluate it on a held-out public split and on a
