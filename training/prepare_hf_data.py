@@ -79,11 +79,24 @@ def _normalize_label(row: dict[str, Any]) -> str:
     return "unknown"
 
 
+def _find_label(row: dict[str, Any]) -> str:
+    """Read simple labels and RAGTruth's processed span-count annotation."""
+    processed = row.get("hallucination_labels_processed")
+    if isinstance(processed, dict):
+        conflict = processed.get("evident_conflict", 0)
+        baseless = processed.get("baseless_info", 0)
+        try:
+            return "unsupported" if int(conflict) > 0 or int(baseless) > 0 else "supported"
+        except (TypeError, ValueError):
+            pass
+    return _normalize_label(row)
+
+
 def normalize_row(row: dict[str, Any], dataset: str, index: int) -> dict[str, Any] | None:
     prompt = _first_text(row, ("prompt", "question", "query", "instruction", "input"))
     answer = _first_text(row, ANSWER_FIELDS)
     context = _find_context(row)
-    label = _normalize_label(row)
+    label = _find_label(row)
     if not prompt or not answer or not context or label == "unknown":
         return None
     return {
